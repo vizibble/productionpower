@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welding Alerts</title>
+    <link rel="stylesheet" href="/CSS/output.css">
+    <script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.js"></script>
+</head>
+
+<body class="bg-gray-900 w-full h-full">
+    <%- include('includes/navbar.ejs') %>
+        <main class="relative flex flex-col flex-grow gap-5 py-10">
+            <% if (locals.names) { %>
+                <section class="flex flex-col justify-center items-center gap-5 px-10">
+                    <article>
+                        <!-- Device Dropdown -->
+                        <div>
+                            <button id="dropdownRadioButtonDevice" data-dropdown-toggle="dropdownRadioDevice"
+                                class="inline-flex items-center bg-blue-700 hover:bg-blue-600 px-3 py-1.5 rounded-lg focus:outline-none font-medium text-white text-sm"
+                                type="button">
+                                Welding Machine
+                                <svg class="ms-2.5 w-2.5 h-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                    fill="none" viewBox="0 0 10 6">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="m1 1 4 4 4-4" />
+                                </svg>
+                            </button>
+                            <div id="dropdownRadioDevice"
+                                class="hidden z-[1009] bg-gray-700 shadow rounded-lg divide-y divide-gray-600 w-48">
+                                <ul class="space-y-1 p-3 text-gray-200 text-sm">
+                                    <li>
+                                        <div class="flex items-center hover:bg-gray-600 p-2 rounded">
+                                            <input id="allDevices" type="radio" value="all" name="device"
+                                                class="bg-gray-700 border-gray-600 focus:ring-2 focus:ring-blue-600 ring-offset-gray-800 focus:ring-offset-gray-800 w-4 h-4"
+                                                checked>
+                                            <label for="allDevices"
+                                                class="ms-2 w-full font-medium text-gray-300 text-sm">All
+                                                Devices</label>
+                                        </div>
+                                    </li>
+                                    <% names.forEach(device=> { %>
+                                        <li>
+                                            <div class="flex items-center hover:bg-gray-600 p-2 rounded">
+                                                <input id="<%= device.device_name %>" type="radio"
+                                                    value="<%= device.device_id %>" name="device"
+                                                    class="bg-gray-700 border-gray-600 focus:ring-2 focus:ring-blue-600 ring-offset-gray-800 focus:ring-offset-gray-800 w-4 h-4">
+                                                <label for="<%= device.device_name %>"
+                                                    class="ms-2 w-full font-medium text-gray-300 text-sm">
+                                                    <%= device.device_name %>
+                                                </label>
+                                            </div>
+                                        </li>
+                                        <% }) %>
+                                </ul>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Buttons -->
+                    <button id="select"
+                        class="bg-blue-600 hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-700 disabled:opacity-50 shadow-md hover:shadow-lg focus:shadow-none active:shadow-none disabled:shadow-none ml-2 px-4 py-2 border border-transparent rounded-md text-white text-sm transition-all disabled:pointer-events-none">
+                        Load Data
+                    </button>
+                    <button id="loading"
+                        class="hidden items-center bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 me-2 px-5 py-2.5 rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 font-medium text-white text-sm">
+                        <svg aria-hidden="true" role="status" class="inline me-3 w-4 h-4 text-white animate-spin"
+                            viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M100 50.5908C100 78.2051 77.6142 100.591 ..." fill="#E5E7EB" />
+                            <path d="M93.9676 39.0409C96.393 38.4038 97.8624 ..." fill="currentColor" />
+                        </svg>
+                        Loading...
+                    </button>
+                </section>
+                <% } %>
+
+                    <!-- AG Grid Container -->
+                    <div id="myGrid" class="hidden mx-10 h-[400px]"></div>
+        </main>
+
+        <!-- Scripts -->
+        <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+        <script src="/JavaScript/records/index.js"></script>
+</body>
+
+</html>
