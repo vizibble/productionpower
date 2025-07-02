@@ -157,8 +157,8 @@ function update_voltage_current_data(dataset) {
     data_voltage.push([t, row.voltage]);
     data_current.push([t, row.current]);
   });
-  chart_voltage = create_line_chart('line-chart-voltage', chart_voltage, 'Voltage Over Time', data_voltage, 'V', 220, 160);
-  chart_current = create_line_chart('line-chart-current', chart_current, 'Current Over Time', data_current, 'A', 10, 3);
+  chart_voltage = create_line_chart('line-chart-voltage', chart_voltage, 'Voltage Over Time', data_voltage, 'V', dataset[0].max_voltage_threshold, dataset[0].min_voltage_threshold);
+  chart_current = create_line_chart('line-chart-current', chart_current, 'Current Over Time', data_current, 'A', dataset[0].max_current_threshold, dataset[0].min_current_threshold);
 }
 function update_voltage_current_live(row) {
   var _chart_voltage2, _chart_current2;

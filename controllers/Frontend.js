@@ -76,10 +76,10 @@ const displayRecords = async (req, res) => {
 }
 
 const getRecords = async (req, res) => {
-    const { device = 'all'} = req.query;
+    const { device = 'all' } = req.query;
 
     try {
-        const rows = await Get_Records_Query( device);
+        const rows = await Get_Records_Query(device);
         return res.status(200).json(rows);
     } catch (error) {
         console.error(`[${new Date().toLocaleString("en-GB")}] Error retrieving records based on query: ${error.message}`);

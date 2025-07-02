@@ -63,8 +63,6 @@ async function Update_Device_Info_Query({ machine_name, product, operator_name, 
         await client.query('ROLLBACK');
         console.error('Update_Device_Info_Query failed:', error);
         throw new Error(error.message)
-    } finally {
-        client.release();
     }
 }
 
@@ -73,10 +71,15 @@ async function Get_Widget_Data_Query(range, selectedDevice) {
 SELECT
     ROUND(AVG(td.voltage)::numeric, 2) AS voltage,
     ROUND(AVG(td.current)::numeric, 2) AS current,
-    DATE_TRUNC('minute', td.timestamp) AS timestamp
+    DATE_TRUNC('minute', td.timestamp) AS timestamp,
+    MAX(dt.min_voltage) AS min_voltage_threshold,
+    MAX(dt.max_voltage) AS max_voltage_threshold,
+    MAX(dt.min_current) AS min_current_threshold,
+    MAX(dt.max_current) AS max_current_threshold
 FROM
     welding_devices wd
-    LEFT JOIN telemetry_data td ON wd.id = td.device_id
+        LEFT JOIN telemetry_data td ON wd.id = td.device_id
+    LEFT JOIN device_thresholds dt ON wd.id = dt.device_id
 WHERE
     wd.id = $1
     AND td.timestamp >= NOW() - INTERVAL '1 ${range}'

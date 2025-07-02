@@ -1,4 +1,4 @@
-const db = require('../service/db'); // adjust this path to your PG pool or client
+const db = require('../service/db');
 
 const handleDataFromDevice = async (req, res) => {
     const deviceId = req.params.id;
@@ -74,7 +74,6 @@ const handleDataFromDevice = async (req, res) => {
         catch (err) {
             console.error(`[${new Date().toLocaleString("en-GB")}] Error emitting data for device ${deviceId}: ${err.message}`);
         }
-
 
         return res.status(200).json({ success: true, alerts });
     } catch (err) {
