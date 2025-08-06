@@ -26,16 +26,10 @@ app.set("views", path.resolve("./views"))
 app.use(express.static(path.join(__dirname, 'src')))
 
 //Different Routes
-const Data_from_tanker_router = require("./routes/Data_from_device.js")
-app.use("/api", Data_from_tanker_router)
-const Frontend_Router = require("./routes/Frontend.js")
-app.use("/", Frontend_Router)
-
-//Connecting the Database
-const client = require("./service/db.js")
-client.connect()
-    .then(() => console.log('Connected to PostgreSQL'))
-    .catch(err => console.error('Connection error', err.stack));
+const device = require("./routes/device.js")
+app.use("/api", device)
+const user = require("./routes/user.js")
+app.use("/", user)
 
 //Starting the server
 const PORT = process.env.PORT || 8080

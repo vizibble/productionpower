@@ -1,6 +1,6 @@
 require("dotenv").config()
 const { JWTGeneration } = require("../service/userAutehntication.js")
-const { Get_All_Ids_Query, Get_Device_Info_Query, Update_Device_Info_Query, Get_Widget_Data_Query, Get_Records_Query } = require("../Database/Frontend.js");
+const { Get_All_Ids_Query, Get_Device_Info_Query, Update_Device_Info_Query, Get_Widget_Data_Query, Get_Records_Query } = require("../Database/user.js");
 
 const displayGraph = async (req, res) => {
     try {

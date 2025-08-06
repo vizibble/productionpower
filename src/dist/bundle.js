@@ -10,14 +10,14 @@
 /* global echarts */
 var gauge_voltage = null;
 var gauge_current = null;
-function create_gauge_generic(domId, value, label, max) {
+function create_gauge_generic(domId, value, title, label, max) {
   var chart = echarts.init(document.getElementById(domId));
   var option = {
     tooltip: {
       formatter: '{a} <br/>{b} : {c}'
     },
     series: [{
-      name: label,
+      name: title,
       type: 'gauge',
       min: 0,
       max: max,
@@ -30,7 +30,7 @@ function create_gauge_generic(domId, value, label, max) {
       },
       data: [{
         value: value,
-        name: label
+        name: title
       }]
     }]
   };
@@ -40,8 +40,8 @@ function create_gauge_generic(domId, value, label, max) {
 function create_gauges(_ref) {
   var voltage = _ref.voltage,
     current = _ref.current;
-  gauge_voltage = create_gauge_generic('gauge-voltage', voltage, 'Voltage', 300);
-  gauge_current = create_gauge_generic('gauge-current', current, 'Current', 30);
+  gauge_voltage = create_gauge_generic('gauge-voltage', voltage, "Voltage", 'V', 300);
+  gauge_current = create_gauge_generic('gauge-current', current, "Current", 'A', 30);
 }
 function update_gauges(_ref2) {
   var _gauge_voltage, _gauge_current;
@@ -4042,7 +4042,7 @@ var _require3 = __webpack_require__(/*! ./popup.js */ "./src/JavaScript/graphs_m
 var socket = io.connect();
 function initializeDeviceSelection() {
   select_Button.addEventListener("click", /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-    var selectedDevice, _document$querySelect, range, response, data;
+    var selectedDevice, range, response, data;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
@@ -4059,7 +4059,7 @@ function initializeDeviceSelection() {
           select_Button.style.display = "none";
           loading_Button.style.display = "inline-flex";
           _context.prev = 8;
-          range = ((_document$querySelect = document.querySelector('input[name="range"]:checked')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.value) || 'day';
+          range = document.querySelector('input[name="range"]:checked').value;
           _context.next = 12;
           return axios.get("/widgets/data", {
             params: {
@@ -4076,9 +4076,7 @@ function initializeDeviceSelection() {
           }
           throw new Error("No data returned");
         case 16:
-          document.querySelectorAll('.widget').forEach(function (widget) {
-            return widget.classList.remove('hidden');
-          });
+          document.querySelector('.widgets').classList.remove('hidden');
           update_voltage_current_data(data);
           create_gauges({
             voltage: data[0].voltage,

@@ -4,79 +4,245 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welding Alerts</title>
+    <title>Vizibble | Records</title>
     <link rel="stylesheet" href="/CSS/output.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
     <script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .control-panel {
+            backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        /* AG Grid Styling */
+        .ag-theme-alpine {
+            --ag-background-color: #ffffff;
+            --ag-header-background-color: #f1f5f9;
+            --ag-odd-row-background-color: #f8fafc;
+            --ag-header-foreground-color: #334155;
+            --ag-foreground-color: #475569;
+            --ag-border-color: #e2e8f0;
+            --ag-selected-row-background-color: #dbeafe;
+            --ag-row-hover-color: #f1f5f9;
+            --ag-font-family: 'Inter', system-ui, sans-serif;
+            --ag-font-size: 14px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .ag-header-cell-label {
+            font-weight: 600;
+        }
+
+        .loading-shimmer {
+            animation: shimmer 2s linear infinite;
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+
+            100% {
+                background-position: 200% 0;
+            }
+        }
+    </style>
 </head>
 
-<body class="bg-gray-900 w-full h-full">
+<body class="min-h-screen font-sans gradient-bg">
     <%- include('includes/navbar.ejs') %>
-        <main class="relative flex flex-col flex-grow gap-5 py-10">
+        <main class="mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-7xl">
             <% if (locals.names) { %>
-                <section class="flex flex-col justify-center items-center gap-5 px-10">
-                    <article>
-                        <!-- Device Dropdown -->
-                        <div>
-                            <button id="dropdownRadioButtonDevice" data-dropdown-toggle="dropdownRadioDevice"
-                                class="inline-flex items-center bg-blue-700 hover:bg-blue-600 px-3 py-1.5 rounded-lg focus:outline-none font-medium text-white text-sm"
-                                type="button">
-                                Welding Machine
-                                <svg class="ms-2.5 w-2.5 h-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                    fill="none" viewBox="0 0 10 6">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2" d="m1 1 4 4 4-4" />
-                                </svg>
-                            </button>
-                            <div id="dropdownRadioDevice"
-                                class="hidden z-[1009] bg-gray-700 shadow rounded-lg divide-y divide-gray-600 w-48">
-                                <ul class="space-y-1 p-3 text-gray-200 text-sm">
-                                    <li>
-                                        <div class="flex items-center hover:bg-gray-600 p-2 rounded">
-                                            <input id="allDevices" type="radio" value="all" name="device"
-                                                class="bg-gray-700 border-gray-600 focus:ring-2 focus:ring-blue-600 ring-offset-gray-800 focus:ring-offset-gray-800 w-4 h-4"
-                                                checked>
-                                            <label for="allDevices"
-                                                class="ms-2 w-full font-medium text-gray-300 text-sm">All
-                                                Devices</label>
+                <!-- Control Panel -->
+                <section class="z-[1000009] relative mb-6">
+                    <div class="shadow-lg p-6 border border-industrial-200 rounded-2xl control-panel">
+                        <div class="flex flex-col space-y-6">
+                            <h2 class="font-semibold text-industrial-900 text-lg">Filter Options</h2>
+
+                            <div class="gap-6 grid grid-cols-1 md:grid-cols-4">
+                                <!-- Device Selection -->
+                                <div class="space-y-2">
+                                    <label class="block font-medium text-industrial-700 text-sm">Welding Machine</label>
+                                    <div class="relative">
+                                        <button id="dropdownRadioButtonDevice"
+                                            data-dropdown-toggle="dropdownRadioDevice"
+                                            class="flex justify-between items-center bg-white hover:bg-industrial-50 px-4 py-3 border border-industrial-300 focus:border-primary-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 w-full font-medium text-industrial-700 text-sm transition-all duration-200"
+                                            type="button">
+                                            <span class="flex items-center">
+                                                <svg class="mr-2 w-4 h-4 text-industrial-500" fill="currentColor"
+                                                    viewBox="0 0 20 20">
+                                                    <path
+                                                        d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
+                                                </svg>
+                                                <span id="selectedDevice">Device</span>
+                                            </span>
+                                            <svg class="w-4 h-4 text-industrial-400" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </button>
+                                        <div id="dropdownRadioDevice"
+                                            class="hidden top-full z-[1009] absolute bg-white shadow-lg mt-2 border border-industrial-200 rounded-xl w-full max-h-60 overflow-y-auto">
+                                            <ul class="py-2">
+                                                <li class="px-4 py-2">
+                                                    <div
+                                                        class="flex items-center hover:bg-industrial-50 p-2 rounded-lg transition-colors">
+                                                        <input id="allDevices" type="radio" value="all" name="device"
+                                                            checked
+                                                            class="bg-white border-industrial-300 focus:ring-2 focus:ring-primary-500 w-4 h-4 text-primary-600">
+                                                        <label for="allDevices"
+                                                            class="ml-3 font-medium text-industrial-700 text-sm">
+                                                            All Devices
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                                <% names.forEach((device, index)=> { %>
+                                                    <li class="px-4 py-2">
+                                                        <div
+                                                            class="flex items-center hover:bg-industrial-50 p-2 rounded-lg transition-colors">
+                                                            <input id="device-<%= index %>" type="radio"
+                                                                value="<%= device.device_id %>" name="device"
+                                                                class="bg-white border-industrial-300 focus:ring-2 focus:ring-primary-500 w-4 h-4 text-primary-600">
+                                                            <label for="device-<%= index %>"
+                                                                class="ml-3 font-medium text-industrial-700 text-sm">
+                                                                <%= device.device_name %>
+                                                            </label>
+                                                        </div>
+                                                    </li>
+                                                    <% }) %>
+                                            </ul>
                                         </div>
-                                    </li>
-                                    <% names.forEach(device=> { %>
-                                        <li>
-                                            <div class="flex items-center hover:bg-gray-600 p-2 rounded">
-                                                <input id="<%= device.device_name %>" type="radio"
-                                                    value="<%= device.device_id %>" name="device"
-                                                    class="bg-gray-700 border-gray-600 focus:ring-2 focus:ring-blue-600 ring-offset-gray-800 focus:ring-offset-gray-800 w-4 h-4">
-                                                <label for="<%= device.device_name %>"
-                                                    class="ms-2 w-full font-medium text-gray-300 text-sm">
-                                                    <%= device.device_name %>
-                                                </label>
-                                            </div>
-                                        </li>
-                                        <% }) %>
-                                </ul>
+                                    </div>
+                                </div>
+
+                                <!-- Time Range Dropdown -->
+                                <div class="space-y-2">
+                                    <label class="block font-medium text-industrial-700 text-sm">Time Range</label>
+                                    <div class="relative">
+                                        <button id="dropdownRadioButton" data-dropdown-toggle="dropdownRadio"
+                                            class="flex justify-between items-center bg-white hover:bg-industrial-50 px-4 py-3 border border-industrial-300 focus:border-primary-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 w-full font-medium text-industrial-700 text-sm transition-all duration-200"
+                                            type="button">
+                                            <span class="flex items-center">
+                                                <svg class="mr-2 w-4 h-4 text-industrial-500" fill="currentColor"
+                                                    viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                                Time
+                                            </span>
+                                            <svg class="w-4 h-4 text-industrial-400" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </button>
+                                        <!-- Dropdown menu -->
+                                        <div id="dropdownRadio"
+                                            class="hidden top-full absolute bg-white shadow-lg mt-2 border border-industrial-200 rounded-xl w-full">
+                                            <ul class="py-2">
+                                                <li class="px-4 py-2">
+                                                    <div
+                                                        class="flex items-center hover:bg-industrial-50 p-2 rounded-lg transition-colors">
+                                                        <input id="day" type="radio" value="day" name="range" checked
+                                                            class="bg-white border-industrial-300 focus:ring-2 focus:ring-primary-500 w-4 h-4 text-primary-600">
+                                                        <label for="day"
+                                                            class="ml-3 font-medium text-industrial-700 text-sm">
+                                                            Last day
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                                <li class="px-4 py-2">
+                                                    <div
+                                                        class="flex items-center hover:bg-industrial-50 p-2 rounded-lg transition-colors">
+                                                        <input id="week" type="radio" value="week" name="range"
+                                                            class="bg-white border-industrial-300 focus:ring-2 focus:ring-primary-500 w-4 h-4 text-primary-600">
+                                                        <label for="week"
+                                                            class="ml-3 font-medium text-industrial-700 text-sm">
+                                                            Last 7 days
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                                <li class="px-4 py-2">
+                                                    <div
+                                                        class="flex items-center hover:bg-industrial-50 p-2 rounded-lg transition-colors">
+                                                        <input id="month" type="radio" value="month" name="range"
+                                                            class="bg-white border-industrial-300 focus:ring-2 focus:ring-primary-500 w-4 h-4 text-primary-600">
+                                                        <label for="month"
+                                                            class="ml-3 font-medium text-industrial-700 text-sm">
+                                                            Last Month
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                                <li class="px-4 py-2">
+                                                    <div
+                                                        class="flex items-center hover:bg-industrial-50 p-2 rounded-lg transition-colors">
+                                                        <input id="year" type="radio" value="year" name="range"
+                                                            class="bg-white border-industrial-300 focus:ring-2 focus:ring-primary-500 w-4 h-4 text-primary-600">
+                                                        <label for="year"
+                                                            class="ml-3 font-medium text-industrial-700 text-sm">
+                                                            Last Year
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="space-y-2">
+                                    <label class="block font-medium text-industrial-700 text-sm">Actions</label>
+                                    <div class="flex space-x-2">
+                                        <button id="select"
+                                            class="flex-1 bg-primary-600 hover:bg-primary-700 focus:bg-primary-700 active:bg-primary-800 disabled:opacity-50 shadow-md hover:shadow-lg px-4 py-3 border border-transparent rounded-xl focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 font-medium text-white text-sm text-center transition-all duration-200 disabled:pointer-events-none">
+                                            <span class="flex justify-center items-center">
+                                                <svg class="mr-1 w-4 h-4" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                                </svg>
+                                                Load Data
+                                            </span>
+                                        </button>
+
+                                        <button id="loading"
+                                            class="hidden flex flex-1 justify-center items-center bg-industrial-600 px-4 py-3 rounded-xl font-medium text-white text-sm">
+                                            <svg class="mr-2 -ml-1 w-4 h-4 text-white animate-spin"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                                    stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor"
+                                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                                </path>
+                                            </svg>
+                                            Loading...
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </article>
-
-                    <!-- Buttons -->
-                    <button id="select"
-                        class="bg-blue-600 hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-700 disabled:opacity-50 shadow-md hover:shadow-lg focus:shadow-none active:shadow-none disabled:shadow-none ml-2 px-4 py-2 border border-transparent rounded-md text-white text-sm transition-all disabled:pointer-events-none">
-                        Load Data
-                    </button>
-                    <button id="loading"
-                        class="hidden items-center bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 me-2 px-5 py-2.5 rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 font-medium text-white text-sm">
-                        <svg aria-hidden="true" role="status" class="inline me-3 w-4 h-4 text-white animate-spin"
-                            viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M100 50.5908C100 78.2051 77.6142 100.591 ..." fill="#E5E7EB" />
-                            <path d="M93.9676 39.0409C96.393 38.4038 97.8624 ..." fill="currentColor" />
-                        </svg>
-                        Loading...
-                    </button>
+                    </div>
                 </section>
                 <% } %>
 
-                    <!-- AG Grid Container -->
-                    <div id="myGrid" class="hidden mx-10 h-[400px]"></div>
+                    <!-- Data Grid Section -->
+                    <section class="bg-white shadow-lg border border-industrial-200 rounded-2xl overflow-hidden">
+                        <!-- AG Grid Container -->
+                        <div id="myGrid" class="hidden ag-theme-alpine" style="height: 500px;"></div>
+                    </section>
         </main>
 
         <!-- Scripts -->

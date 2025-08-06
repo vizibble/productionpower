@@ -27,7 +27,7 @@ function initializeDeviceSelection() {
         loading_Button.style.display = "inline-flex";
 
         try {
-            const range = document.querySelector('input[name="range"]:checked')?.value || 'day';
+            const range = document.querySelector('input[name="range"]:checked').value;
 
             const response = await axios.get(`/widgets/data`, {
                 params: {
@@ -39,7 +39,7 @@ function initializeDeviceSelection() {
             const { data } = response.data;
             if (!Array.isArray(data) || data.length === 0) throw new Error("No data returned");
 
-            document.querySelectorAll('.widget').forEach(widget => widget.classList.remove('hidden'));
+            document.querySelector('.widgets').classList.remove('hidden');
 
             update_voltage_current_data(data);
             create_gauges({ voltage: data[0].voltage, current: data[0].current });

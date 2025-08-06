@@ -47,6 +47,9 @@ const fetchData = async () => {
     const selectedDevice = document.querySelector('input[name="device"]:checked').value;
     document.querySelector("#myGrid").classList.remove("hidden");
 
+    document.querySelector("#loading").classList.remove("hidden");
+    document.querySelector("#select").classList.add("hidden");
+
     try {
         const response = await fetch(`/records/data?device=${selectedDevice}`);
         const records = await response.json();
@@ -65,5 +68,8 @@ const fetchData = async () => {
     } catch (error) {
         console.error(`[${new Date().toLocaleString()}] Error fetching records:`, error);
         alert("Failed to fetch alert records.");
+    } finally {
+        document.querySelector("#loading").classList.add("hidden");
+        document.querySelector("#select").classList.remove("hidden");
     }
 };

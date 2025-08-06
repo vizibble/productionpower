@@ -6,205 +6,329 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vizibble | Widgets</title>
     <link rel="stylesheet" href="/CSS/output.css">
-    <!-- Load map CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"
-        integrity="sha512-Zcn6bjR/8RZbLEpLIeOwNtzREBAJnUKESxces60Mpoj+2okopSAcSUIUOseddDm0cxnGQzxIR7vJgsLZbdLE3w=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .card-gradient {
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+        }
+
+        .industrial-border {
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+
+        .status-indicator {
+            position: relative;
+        }
+
+        .status-indicator::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -12px;
+            transform: translateY(-50%);
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .widget-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .widget-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .control-panel {
+            backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+    </style>
 </head>
 
-<body class="bg-gray-900">
+<body class="min-h-screen font-sans gradient-bg">
     <%- include('includes/navbar.ejs') %>
-        <main class="relative flex flex-col gap-5 py-10">
+        <main class="mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-7xl">
             <% if (locals.names) { %>
-                <section class="flex flex-col justify-center items-center gap-5 px-10">
-                    <article class="flex sm:flex-row flex-col gap-5">
-                        <!-- Welders Dropdown -->
-                        <div>
-                            <button id="dropdownRadioButtonWelder" data-dropdown-toggle="dropdownRadioWelder"
-                                class="inline-flex items-center bg-blue-700 hover:bg-blue-600 px-3 py-1.5 rounded-lg focus:outline-none font-medium text-white text-sm"
-                                type="button">
-                                Welding Machine
-                                <svg class="ms-2.5 w-2.5 h-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                    fill="none" viewBox="0 0 10 6">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2" d="m1 1 4 4 4-4" />
-                                </svg>
-                            </button>
-                            <!-- Dropdown menu -->
-                            <div id="dropdownRadioWelder"
-                                class="hidden z-[1009] bg-gray-700 shadow rounded-lg divide-y divide-gray-600 w-48"
-                                data-popper-reference-hidden="" data-popper-escaped="" data-popper-placement="top"
-                                style="position: absolute;">
-                                <ul class="space-y-1 p-3 text-gray-200 text-sm"
-                                    aria-labelledby="dropdownRadioButtonWelder">
-                                    <% names.forEach((device, index)=> { %>
-                                        <li>
-                                            <div class="flex items-center hover:bg-gray-600 p-2 rounded">
-                                                <input id="device-<%= index %>" type="radio"
-                                                    value="<%= device.device_id %>" name="device"
-                                                    class="bg-gray-700 border-gray-600 focus:ring-2 focus:ring-blue-600 ring-offset-gray-800 focus:ring-offset-gray-800 w-4 h-4">
-                                                <label for="device-<%= index %>"
-                                                    class="ms-2 w-full font-medium text-gray-300 text-sm">
-                                                    <%= device.device_name %>
-                                                </label>
-                                            </div>
-                                        </li>
-                                        <% }) %>
-                                </ul>
+                <!-- Control Panel -->
+                <section class="z-[1000009] relative mb-8">
+                    <div class="shadow-card p-6 border border-industrial-200 rounded-2xl control-panel">
+                        <div class="flex flex-col space-y-6">
+                            <div class="flex justify-between items-center">
+                                <h2 class="font-semibold text-industrial-900 text-lg">Control Panel</h2>
+                                <div class="flex items-center space-x-2 text-industrial-600 text-sm">
+                                    <div class="bg-green-500 rounded-full w-2 h-2 animate-pulse"></div>
+                                    <span>System Online</span>
+                                </div>
                             </div>
-                        </div>
-
-                        <div>
-                            <button id="dropdownRadioButton" data-dropdown-toggle="dropdownRadio"
-                                class="inline-flex items-center bg-blue-700 hover:bg-blue-600 px-3 py-1.5 rounded-lg focus:outline-none font-medium text-white text-sm"
-                                type="button">
-                                <svg class="me-3 w-3 h-3 text-white" aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                    <path
-                                        d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
-                                </svg>
-                                Time Range
-                                <svg class="ms-2.5 w-2.5 h-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                    fill="none" viewBox="0 0 10 6">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2" d="m1 1 4 4 4-4" />
-                                </svg>
-                            </button>
-                            <!-- Dropdown menu -->
-                            <div id="dropdownRadio"
-                                class="hidden z-[1009] bg-gray-700 shadow rounded-lg divide-y divide-gray-600 w-48"
-                                data-popper-reference-hidden="" data-popper-escaped="" data-popper-placement="top"
-                                style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate3d(522.5px, 3847.5px, 0px);">
-                                <ul class="space-y-1 p-3 text-gray-200 text-sm" aria-labelledby="dropdownRadioButton">
-                                    <li>
-                                        <div class="flex items-center hover:bg-gray-600 p-2 rounded">
-                                            <input id="day" type="radio" value="day" name="range" checked=""
-                                                class="bg-gray-700 border-gray-600 focus:ring-2 focus:ring-blue-600 ring-offset-gray-800 focus:ring-offset-gray-800 w-4 h-4">
-                                            <label for="day" class="ms-2 w-full font-medium text-gray-300 text-sm">
+                            <div class="gap-6 grid grid-cols-1 md:grid-cols-3">
+                                <!-- Welders Dropdown -->
+                                <div class="space-y-2">
+                                    <label class="block font-medium text-industrial-700 text-sm">Welding Machine</label>
+                                    <div class="relative">
+                                        <button id="dropdownRadioButtonWelder"
+                                            data-dropdown-toggle="dropdownRadioWelder"
+                                            class="flex justify-between items-center bg-white hover:bg-industrial-50 px-4 py-3 border border-industrial-300 focus:border-primary-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 w-full font-medium text-industrial-700 text-sm transition-all duration-200"
+                                            type="button">
+                                            <span class="flex items-center">
+                                                <svg class="mr-2 w-4 h-4 text-industrial-500" fill="currentColor"
+                                                    viewBox="0 0 20 20">
+                                                    <path
+                                                        d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
+                                                </svg>
+                                                Select Machine
+                                            </span>
+                                            <svg class="w-4 h-4 text-industrial-400" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </button>
+                                        <!-- Dropdown menu -->
+                                        <div id="dropdownRadioWelder"
+                                            class="hidden top-full absolute bg-white shadow-lg mt-2 border border-industrial-200 rounded-xl w-full">
+                                            <ul class="py-2">
+                                                <% names.forEach((device, index)=> { %>
+                                                    <li class="px-4 py-2">
+                                                        <div
+                                                            class="flex items-center hover:bg-industrial-50 p-2 rounded-lg transition-colors">
+                                                            <input id="device-<%= index %>" type="radio"
+                                                                value="<%= device.device_id %>" name="device"
+                                                                class="bg-white border-industrial-300 focus:ring-2 focus:ring-primary-500 w-4 h-4 text-primary-600">
+                                                            <label for="device-<%= index %>"
+                                                                class="ml-3 font-medium text-industrial-700 text-sm">
+                                                                <%= device.device_name %>
+                                                            </label>
+                                                        </div>
+                                                    </li>
+                                                    <% }) %>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Time Range Dropdown -->
+                                <div class="space-y-2">
+                                    <label class="block font-medium text-industrial-700 text-sm">Time Range</label>
+                                    <div class="relative">
+                                        <button id="dropdownRadioButton" data-dropdown-toggle="dropdownRadio"
+                                            class="flex justify-between items-center bg-white hover:bg-industrial-50 px-4 py-3 border border-industrial-300 focus:border-primary-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 w-full font-medium text-industrial-700 text-sm transition-all duration-200"
+                                            type="button">
+                                            <span class="flex items-center">
+                                                <svg class="mr-2 w-4 h-4 text-industrial-500" fill="currentColor"
+                                                    viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
                                                 Last day
-                                            </label>
+                                            </span>
+                                            <svg class="w-4 h-4 text-industrial-400" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </button>
+                                        <!-- Dropdown menu -->
+                                        <div id="dropdownRadio"
+                                            class="hidden top-full absolute bg-white shadow-lg mt-2 border border-industrial-200 rounded-xl w-full">
+                                            <ul class="py-2">
+                                                <li class="px-4 py-2">
+                                                    <div
+                                                        class="flex items-center hover:bg-industrial-50 p-2 rounded-lg transition-colors">
+                                                        <input id="day" type="radio" value="day" name="range" checked
+                                                            class="bg-white border-industrial-300 focus:ring-2 focus:ring-primary-500 w-4 h-4 text-primary-600">
+                                                        <label for="day"
+                                                            class="ml-3 font-medium text-industrial-700 text-sm">
+                                                            Last day
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                                <li class="px-4 py-2">
+                                                    <div
+                                                        class="flex items-center hover:bg-industrial-50 p-2 rounded-lg transition-colors">
+                                                        <input id="week" type="radio" value="week" name="range"
+                                                            class="bg-white border-industrial-300 focus:ring-2 focus:ring-primary-500 w-4 h-4 text-primary-600">
+                                                        <label for="week"
+                                                            class="ml-3 font-medium text-industrial-700 text-sm">
+                                                            Last 7 days
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                                <li class="px-4 py-2">
+                                                    <div
+                                                        class="flex items-center hover:bg-industrial-50 p-2 rounded-lg transition-colors">
+                                                        <input id="month" type="radio" value="month" name="range"
+                                                            class="bg-white border-industrial-300 focus:ring-2 focus:ring-primary-500 w-4 h-4 text-primary-600">
+                                                        <label for="month"
+                                                            class="ml-3 font-medium text-industrial-700 text-sm">
+                                                            Last Month
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                                <li class="px-4 py-2">
+                                                    <div
+                                                        class="flex items-center hover:bg-industrial-50 p-2 rounded-lg transition-colors">
+                                                        <input id="year" type="radio" value="year" name="range"
+                                                            class="bg-white border-industrial-300 focus:ring-2 focus:ring-primary-500 w-4 h-4 text-primary-600">
+                                                        <label for="year"
+                                                            class="ml-3 font-medium text-industrial-700 text-sm">
+                                                            Last Year
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                            </ul>
                                         </div>
-                                    </li>
-                                    <li>
-                                        <div class="flex items-center hover:bg-gray-600 p-2 rounded">
-                                            <input id="week" type="radio" value="week" name="range"
-                                                class="bg-gray-700 border-gray-600 focus:ring-2 focus:ring-blue-600 ring-offset-gray-800 focus:ring-offset-gray-800 w-4 h-4">
-                                            <label for="week" class="ms-2 w-full font-medium text-gray-300 text-sm">
-                                                Last 7 days
-                                            </label>
-
-                                        </div>
-                                    </li>
-
-
-                                    <li>
-                                        <div class="flex items-center hover:bg-gray-600 p-2 rounded">
-                                            <input id="month" type="radio" value="month" name="range"
-                                                class="bg-gray-700 border-gray-600 focus:ring-2 focus:ring-blue-600 ring-offset-gray-800 focus:ring-offset-gray-800 w-4 h-4">
-                                            <label for="month" class="ms-2 w-full font-medium text-gray-300 text-sm">
-                                                Last Month
-                                            </label>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="flex items-center hover:bg-gray-600 p-2 rounded">
-                                            <input id="year" type="radio" value="year" name="range"
-                                                class="bg-gray-700 border-gray-600 focus:ring-2 focus:ring-blue-600 ring-offset-gray-800 focus:ring-offset-gray-800 w-4 h-4">
-                                            <label for="year" class="ms-2 w-full font-medium text-gray-300 text-sm">
-                                                Last Year
-                                            </label>
-                                        </div>
-                                    </li>
-                                </ul>
+                                    </div>
+                                </div>
+                                <!-- Action Buttons -->
+                                <div class="flex items-end space-y-2">
+                                    <div class="flex space-x-3 w-full">
+                                        <button
+                                            class="flex-1 bg-primary-600 hover:bg-primary-700 focus:bg-primary-700 active:bg-primary-800 disabled:opacity-50 shadow-md hover:shadow-lg px-4 py-3 border border-transparent rounded-xl focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 font-medium text-white text-sm text-center transition-all duration-200 disabled:pointer-events-none"
+                                            type="button" id="select">
+                                            <svg class="inline mr-2 w-4 h-4" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 5l7 7-7 7" />
+                                            </svg>
+                                            Apply Filter
+                                        </button>
+                                        <button id="loading"
+                                            class="hidden flex-1 justify-center items-center bg-industrial-600 px-4 py-3 rounded-xl font-medium text-white text-sm">
+                                            <svg class="mr-2 -ml-1 w-4 h-4 text-white animate-spin"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                                    stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor"
+                                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                                </path>
+                                            </svg>
+                                            Loading...
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </article>
-                    <button
-                        class="bg-blue-600 hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-700 disabled:opacity-50 shadow-md hover:shadow-lg focus:shadow-none active:shadow-none disabled:shadow-none ml-2 px-4 py-2 border border-transparent rounded-md text-white text-sm text-center transition-all disabled:pointer-events-none"
-                        type="button" id="select">
-                        Select
-                    </button>
-                    <button id="loading"
-                        class="hidden items-center bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 me-2 px-5 py-2.5 rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 font-medium text-white text-sm text-center">
-                        <svg aria-hidden="true" role="status" class="inline me-3 w-4 h-4 text-white animate-spin"
-                            viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                                fill="#E5E7EB" />
-                            <path
-                                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                                fill="currentColor" />
-                        </svg>
-                        Loading...
-                    </button>
+                    </div>
                 </section>
                 <% } %>
-                    <section
-                        class="flex lg:flex-row flex-col flex-wrap justify-center items-center gap-4 mx-auto w-auto widgets">
-                        <!-- Voltage Line Chart -->
-                        <div
-                            class="bg-white shadow-md rounded-3xl w-[90vw] lg:w-[48vw] h-[50vh] draggable-resizable widget">
-                            <div id="line-chart-voltage" class="w-full h-full"></div>
-                        </div>
 
-                        <!-- Current Line Chart -->
-                        <div
-                            class="bg-white shadow-md rounded-3xl w-[90vw] lg:w-[48vw] h-[50vh] draggable-resizable widget">
-                            <div id="line-chart-current" class="w-full h-full"></div>
-                        </div>
+                    <!-- Dashboard Widgets -->
+                    <section class="hidden widgets">
+                        <div class="gap-6 grid grid-cols-1 xl:grid-cols-2">
+                            <!-- Voltage Line Chart -->
+                            <div
+                                class="shadow-card border border-industrial-200 rounded-2xl overflow-hidden widget-card card-gradient">
+                                <div class="p-6 border-industrial-100 border-b">
+                                    <div>
+                                        <h3 class="font-semibold text-industrial-900 text-lg">Voltage Monitoring
+                                        </h3>
+                                    </div>
+                                </div>
+                                <div id="line-chart-voltage" class="h-96"></div>
+                            </div>
 
-                        <!-- Voltage Gauge -->
-                        <div
-                            class="bg-white shadow-md rounded-3xl w-[90vw] lg:w-[48vw] h-[60vh] draggable-resizable widget">
-                            <div id="gauge-voltage" class="w-full h-full"></div>
-                        </div>
+                            <!-- Current Line Chart -->
+                            <div
+                                class="shadow-card border border-industrial-200 rounded-2xl overflow-hidden widget-card card-gradient">
+                                <div class="p-6 border-industrial-100 border-b">
+                                    <div>
+                                        <h3 class="font-semibold text-industrial-900 text-lg">Current Monitoring
+                                        </h3>
+                                    </div>
+                                </div>
+                                <div id="line-chart-current" class="h-96"></div>
+                            </div>
 
-                        <!-- Current Gauge -->
-                        <div
-                            class="bg-white shadow-md rounded-3xl w-[90vw] lg:w-[48vw] h-[60vh] draggable-resizable widget">
-                            <div id="gauge-current" class="w-full h-full"></div>
+                            <!-- Voltage Gauge -->
+                            <div
+                                class="shadow-card border border-industrial-200 rounded-2xl overflow-hidden widget-card card-gradient">
+                                <div class="p-6 border-industrial-100 border-b">
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <h3 class="font-semibold text-industrial-900 text-lg">Voltage Gauge</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="gauge-voltage" class="h-96"></div>
+                            </div>
+
+                            <!-- Current Gauge -->
+                            <div
+                                class="shadow-card border border-industrial-200 rounded-2xl overflow-hidden widget-card card-gradient">
+                                <div class="p-6 border-industrial-100 border-b">
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <h3 class="font-semibold text-industrial-900 text-lg">Current Gauge</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="gauge-current" class="h-80"></div>
+                            </div>
                         </div>
                     </section>
-                    <section class="hidden top-1/2 left-1/2 z-0 absolute -translate-x-1/2 modal">
-                        <div
-                            class="flex items-center bg-white shadow-lg pr-4 border border-red-500 w-[90vw] sm:w-auto h-16">
-                            <div class="flex justify-center items-center bg-red-100 w-12 h-full">
-                                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke="red">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
+
+                    <!-- Alert Modal -->
+                    <section class="hidden z-50 fixed inset-0 flex justify-center items-center p-4 modal">
+                        <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+                        <div class="relative bg-white shadow-2xl border border-red-200 rounded-2xl w-full max-w-md">
+                            <div class="flex items-center p-6">
+                                <div class="flex-shrink-0">
+                                    <div class="flex justify-center items-center bg-red-100 rounded-full w-12 h-12">
+                                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="flex-1 ml-4">
+                                    <h3 class="font-semibold text-red-900 text-lg status_alert_heading"></h3>
+                                    <p class="mt-1 text-red-700 text-sm status_text"></p>
+                                </div>
+                                <button class="hover:bg-red-50 ml-4 p-2 rounded-lg transition-colors close">
+                                    <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </button>
                             </div>
-                            <div class="px-6">
-                                <h5 class="font-semibold text-red-500 status_alert_heading"></h5>
-                                <p class="text-sm status_text"></p>
-                            </div>
-                            <button class="ml-auto close">
-                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                    fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </button>
                         </div>
                     </section>
         </main>
 </body>
+
 <!-- 1. Load socket client -->
 <script src="/socket.io/socket.io.js"></script>
-<!-- 2. Load Leaflet library -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"
-    integrity="sha512-puJW3E/qXDqYp9IfhAI54BJEaWIfloJ7JWs7OeD5i6ruC9JZL1gERT1wjtwXFlh7CjE7ZJ+/vcRZRkIYIb6p4g=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<!-- 3. Echarts library -->
+<!-- 2. Echarts library -->
 <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
-<!-- 4. flowbite script -->
+<!-- 3. flowbite script -->
 <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
-<!-- 5. Load interactjs library -->
 <script src="/dist/bundle.js"></script>
-<script>
-    document.querySelectorAll('.widget').forEach(widget => widget.classList.add('hidden'));
-</script>
+
+</html>
 
 </html>

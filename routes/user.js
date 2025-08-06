@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { JWTMiddleware } = require("../middleware/checkAuth.js");
-const { displayGraph, displayLogin, displayPanel, validateUser, updateMetaData, GetWidgetData, displayRecords, getRecords } = require("../controllers/Frontend.js");
+const { displayGraph, displayLogin, displayPanel, validateUser, updateMetaData, GetWidgetData, displayRecords, getRecords } = require("../controllers/user.js");
 
 router.route("/")
     .get(displayGraph);
